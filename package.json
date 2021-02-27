@@ -1,0 +1,28 @@
+{
+  "name": "ethereumcertification",
+  "version": "1.0.0",
+  "description": "a repository of work to be done for ETH developer certification in Udemy",
+  "main": "index.js",
+  "engines": {
+    "node": "14.x"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "eth",
+    "blockchain"
+  ],
+  "author": "Ivan Damyanov",
+  "license": "ISC",
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^1.2.2",
+    "dotenv": "^8.2.0",
+    "mocha": "^8.3.0",
+    "web3": "^1.3.4"
+  },
+  "devDependencies": {
+    "solc": "^0.8.1",
+    "ganache-cli": "^6.12.2"
+  }
+}
