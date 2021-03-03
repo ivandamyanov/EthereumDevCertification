@@ -1,0 +1,24 @@
+{
+  "name": "kickstart",
+  "version": "1.0.0",
+  "description": "kickstarter on blockchain",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "eth",
+    "blockchain"
+  ],
+  "author": "Ivan Damyanov",
+  "license": "ISC",
+  "dependencies": {
+    "fs-extra": "^9.1.0",
+    "ganache-cli": "^6.12.2",
+    "mocha": "^8.3.0",
+    "solc": "^0.8.1",
+    "web3": "^1.3.4",
+    "@truffle/hdwallet-provider": "^1.2.2",
+    "dotenv": "^8.2.0"
+  }
+}
