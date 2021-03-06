@@ -4,6 +4,7 @@ import { Link } from '../../../routes';
 import Layout from '../../../components/Layout';
 import Campaign from '../../../ethereum/campaign';
 import RequestRow from '../../../components/RequestRow';
+import web3 from '../../../ethereum/web3';
 
 class RequestIndex extends Component {
     static async getInitialProps(props) {
@@ -12,18 +13,24 @@ class RequestIndex extends Component {
         const requestCount = await campaign.methods.getRequestsCount().call();
         const approversCount = await campaign.methods.approversCount().call();
 
+        const accounts = await web3.eth.getAccounts();
+        const isManager = await campaign.methods.manager().call() === accounts[0];
+
         const requests = await Promise.all(
             Array(parseInt(requestCount)).fill().map((element, index) => {
                 return campaign.methods.requests(index).call();
             })
         );
-        return { address, requests, requestCount, approversCount };
+        return { address, requests, requestCount, approversCount, isManager };
     }
 
     render() {
         const { Header, Row, HeaderCell, Body } = Table;
         return (
             <Layout>
+                <Link route={`/campaigns/${this.props.address}`}>
+                    <a>Back</a>
+                </Link>
                 <h3>Requests</h3>
                 <Link route={`/campaigns/${this.props.address}/requests/new`}>
                     <a>
@@ -39,7 +46,7 @@ class RequestIndex extends Component {
                             <HeaderCell>Recipient</HeaderCell>
                             <HeaderCell>Approval count</HeaderCell>
                             <HeaderCell>Approve</HeaderCell>
-                            <HeaderCell>Finalize</HeaderCell>
+                            {!this.props.isManager ? null : ( <HeaderCell>Finalize</HeaderCell> )}
                         </Row>
                     </Header>
                     <Body>
@@ -54,7 +61,7 @@ class RequestIndex extends Component {
     renderRows() {
         return this.props.requests.map((request, index) => {
             return <RequestRow key={index} id={index} request={request}
-                address={this.props.address} approversCount={this.props.approversCount} />;
+                address={this.props.address} approversCount={this.props.approversCount} isManager={this.props.isManager} />;
         })
     }
 }

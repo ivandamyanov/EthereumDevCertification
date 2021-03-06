@@ -5,11 +5,17 @@ import { Table } from 'semantic-ui-react';
 import Campaign from '../ethereum/campaign';
 
 class RequestRow extends Component {
+    state = {
+        isApproving: false,
+        isFinalizing: false,
+        errorMessage: ''
+    };
+
     render() {
         const { Row, Cell } = Table;
-        const { id, request, approversCount } = this.props
+        const { id, request, approversCount, isManager } = this.props
         const readyToFinalize = request.approvalCount > approversCount / 2
-        && !request.isComplete;
+            && !request.isComplete;
 
         return (
             <Row disabled={request.isComplete} positive={readyToFinalize}>
@@ -20,31 +26,57 @@ class RequestRow extends Component {
                 <Cell>{request.approvalCount}/{approversCount}</Cell>
                 <Cell>
                     {request.isComplete ? null : (
-                        <Button color="green" basic onClick={this.onApprove}>Approve</Button>
+                        <Button color="green" basic onClick={this.onApprove} loading={this.state.isApproving}>Approve</Button>
                     )}
                 </Cell>
-                <Cell> {request.isComplete ? null : (
-                    <Button color="teal" basic onClick={this.onFinalize}>Finalize</Button>
+                {!isManager ? null : (
+                    <Cell> {request.isComplete ? null : (
+                        <Button color="teal" basic onClick={this.onFinalize} loading={this.state.isFinalizing}>Finalize</Button>
+                    )}
+                    </Cell>
                 )}
-                </Cell>
+                { !this.state.errorMessage ? null : (
+                    <Cell>
+                        <div class="ui icon button" data-tooltip={this.state.errorMessage}>
+                            <i class="info icon"></i>
+                        </div>
+                    </Cell>
+                )}
             </Row>
         );
     }
 
     onApprove = async () => {
         const campaign = Campaign(this.props.address);
-        const accounts = await web3.eth.getAccounts();
-        await campaign.methods.approveRequest(this.props.id).send({
-            from: accounts[0]
-        });
+        this.setState({ isApproving: true, errorMessage: '' });
+
+        try {
+            const accounts = await web3.eth.getAccounts();
+            await campaign.methods.approveRequest(this.props.id).send({
+                from: accounts[0]
+            });
+        }
+        catch (err) {
+            this.setState({ errorMessage: err.message });
+        }
+        this.setState({ isApproving: false });
     };
 
     onFinalize = async () => {
         const campaign = Campaign(this.props.address);
-        const accounts = await web3.eth.getAccounts();
-        await campaign.methods.finalizeRequest(this.props.id).send({
-            from: accounts[0]
-        });
+        this.setState({ isFinalizing: true, errorMessage: '' });
+
+        try {
+            const accounts = await web3.eth.getAccounts();
+            await campaign.methods.finalizeRequest(this.props.id).send({
+                from: accounts[0]
+            });
+        }
+        catch (err) {
+            this.setState({ errorMessage: err.message });
+        }
+
+        this.setState({ isFinalizing: false });
     };
 }
 
