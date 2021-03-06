@@ -1,5 +1,5 @@
 const path = require('path')
-require('dotenv').config({path: path.resolve('../.env')});
+require('dotenv').config({ path: path.resolve('../.env') });
 const HDWalletProvider = require('@truffle/hdwallet-provider')
 const Web3 = require('web3');
 const compiledFactory = require('./build/CampaignFactory.json');
